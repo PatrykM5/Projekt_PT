@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,15 +26,15 @@ public class Main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button button = (Button)findViewById(R.id.button);
-        final TextView tv = (TextView)findViewById(R.id.textView);
+        Button button = (Button) findViewById(R.id.button);
+        final TextView tv = (TextView) findViewById(R.id.textView);
 
 
         button.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                getWifiName(getApplicationContext());
-                getWifiPower(getApplicationContext());
+                getWifiConfiguration(getApplicationContext());
             }
         });
 
@@ -42,22 +44,22 @@ public class Main extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 final WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
                 int state = wifi.getWifiState();
-                if(state == WifiManager.WIFI_STATE_ENABLED) {
+                if (state == WifiManager.WIFI_STATE_ENABLED) {
                     List<ScanResult> results = wifi.getScanResults();
 
                     for (ScanResult result : results) {
-                        if(result.BSSID.equals(wifi.getConnectionInfo().getBSSID())) {
+                        if (result.BSSID.equals(wifi.getConnectionInfo().getBSSID())) {
                             int level = WifiManager.calculateSignalLevel(wifi.getConnectionInfo().getRssi(),
                                     result.level);
                             int difference = level * 100 / result.level;
-                            int signalStrangth= 0;
-                            if(difference >= 100)
+                            int signalStrangth = 0;
+                            if (difference >= 100)
                                 signalStrangth = 4;
-                            else if(difference >= 75)
+                            else if (difference >= 75)
                                 signalStrangth = 3;
-                            else if(difference >= 50)
+                            else if (difference >= 50)
                                 signalStrangth = 2;
-                            else if(difference >= 25)
+                            else if (difference >= 25)
                                 signalStrangth = 1;
                             tv.setText(tv.getText() + "\nDifference : " + difference + " signal state:" + signalStrangth);
 
@@ -69,27 +71,21 @@ public class Main extends AppCompatActivity {
         }, new IntentFilter(WifiManager.RSSI_CHANGED_ACTION));
     }
 
-    public String getWifiName(Context context) {
-        WifiManager manager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        if (manager.isWifiEnabled()) {
-            WifiInfo wifiInfo = manager.getConnectionInfo();
-            if (wifiInfo != null) {
-                NetworkInfo.DetailedState state = WifiInfo.getDetailedStateOf(wifiInfo.getSupplicantState());
-                if (state == NetworkInfo.DetailedState.CONNECTED || state == NetworkInfo.DetailedState.OBTAINING_IPADDR) {
-                    Log.d("Log: ", wifiInfo.getBSSID());
-                    Log.d("Log: ", wifiInfo.getSSID());
-                    return wifiInfo.getBSSID();
-                }
-            }
-        }
-        return null;
-    }
+    // https://developer.android.com/reference/android/net/wifi/WifiManager.html <- Dokumentacja WifiMenager, compareSignalLevel(int rssiA, int rssib)
 
-    public void getWifiPower(Context context){
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void getWifiConfiguration(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         int numberOfLevels = 5;
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         int level = WifiManager.calculateSignalLevel(wifiInfo.getRssi(), numberOfLevels);
-        Log.d("Log: ", String.valueOf(level));
+        Log.d("-------------------------", "");
+        Log.d("Moc po przeliczeniu: ", String.valueOf(level));
+        Log.d("RSSI - wskaźnik mocy: ", String.valueOf(wifiInfo.getRssi()));
+        Log.d("Częstotliwość: ", String.valueOf(wifiInfo.getFrequency()));
+        Log.d("BSSID: ", wifiInfo.getBSSID());
+        Log.d("Mac Address: ", wifiInfo.getMacAddress());
+        Log.d("Szybkość łącza: ", String.valueOf(wifiInfo.getLinkSpeed()));
+        Log.d("SSID: ", wifiInfo.getSSID());
     }
 }
