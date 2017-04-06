@@ -4,23 +4,61 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.l.aplikacjamobila.Main">
+    tools:context="com.example.l.aplikacjamobila.WifiConfiguration">
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
         android:text="Button"
         tools:layout_editor_absoluteX="146dp"
         tools:layout_editor_absoluteY="334dp" />
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:id="@+id/tvSSID"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="83dp"
-        android:text="" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="36dp"
+        android:gravity="center"
+        android:text="SSID" />
+
+    <TextView
+        android:id="@+id/tvFrequency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/tvSSID"
+        android:layout_alignRight="@+id/tvSSID"
+        android:layout_below="@+id/tvSSID"
+        android:layout_marginTop="28dp"
+        android:gravity="center"
+        android:text="Frequency" />
+
+    <TextView
+        android:id="@+id/tvBSSID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvFrequency"
+        android:layout_marginTop="27dp"
+        android:gravity="center"
+        android:text="BSSID" />
+
+    <TextView
+        android:id="@+id/tvMacAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/tvBSSID"
+        android:layout_alignRight="@+id/tvBSSID"
+        android:layout_below="@+id/tvBSSID"
+        android:layout_marginTop="33dp"
+        android:gravity="center"
+        android:text="Mac Address" />
 
 </RelativeLayout>
