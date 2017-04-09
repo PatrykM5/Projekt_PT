@@ -1,7 +1,5 @@
 package com.example.l.aplikacjamobila;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,12 +8,17 @@ import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.view.Menu;
+import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.Button;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends Activity {
 
@@ -30,21 +33,55 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         lvWifiDetails = (ListView) findViewById(R.id.lvWifiDetails);
-        Button btnRefresh = (Button) findViewById(R.id.btnRefresh);
         mainWifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiReceiver receiverWifi = new WifiReceiver();
         registerReceiver(receiverWifi, new IntentFilter(
                 WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         scanWifiList();
 
-        btnRefresh.setOnClickListener(new OnClickListener() {
-
+        lvWifiDetails.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                scanWifiList();
-
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ScanResult selectedWiFi = wifiList.get(position);
             }
         });
+
+        Timer t = new Timer();
+        t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+
+                process();
+                Log.d("Odświeżanie: ", DateFormat.getDateTimeInstance().format(new Date()));
+            }
+        }, 0, 20000);
+    }
+
+    private void process() {
+
+        new Thread(new Runnable() {
+
+            public void run() {
+                try {
+
+                } catch (Exception e) {
+
+                }
+                runOnUiThread(new Runnable() {
+
+                    public void run() {
+                        try {
+                            //your list fill hear
+                            adapter.notifyDataSetChanged();
+                            scanWifiList();
+                        } catch (Exception e) {
+
+                        }
+                    }
+                });
+            }
+
+        }).start();
     }
 
     private void setAdapter() {
@@ -55,6 +92,7 @@ public class MainActivity extends Activity {
     private void scanWifiList() {
         mainWifi.startScan();
         wifiList = mainWifi.getScanResults();
+        Toast.makeText(getApplicationContext(), "Odświeżanie: " + DateFormat.getDateTimeInstance().format(new Date()), Toast.LENGTH_SHORT).show();
 
         setAdapter();
     }
