@@ -50,11 +50,10 @@ public class MainActivity extends Activity {
         t.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-
                 process();
                 Log.d("Odświeżanie: ", DateFormat.getDateTimeInstance().format(new Date()));
             }
-        }, 0, 20000);
+        }, 0, 10000); // czas w milisekundach. 20sek = 20000
     }
 
     private void process() {
@@ -92,7 +91,7 @@ public class MainActivity extends Activity {
     private void scanWifiList() {
         mainWifi.startScan();
         wifiList = mainWifi.getScanResults();
-        Toast.makeText(getApplicationContext(), "Odświeżanie: " + DateFormat.getDateTimeInstance().format(new Date()), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Odświeżanie: " + DateFormat.getDateTimeInstance().format(new Date()), Toast.LENGTH_SHORT).show();
 
         setAdapter();
     }

@@ -53,6 +53,8 @@ class ListAdapter extends BaseAdapter {
             holder = (Holder) view.getTag();
         }
         holder.tvDetails.setText("SSID :: " + wifiList.get(position).SSID
+                + "\nDistance :: "
+                + calculateDistance(wifiList.get(position).level, wifiList.get(position).frequency)
                 + "\nStrength :: " + wifiList.get(position).level
                 + "\nBSSID :: " + wifiList.get(position).BSSID
                 + "\nChannel :: "
@@ -73,8 +75,12 @@ class ListAdapter extends BaseAdapter {
         }
     }
 
+    private double calculateDistance(double signalLevelInDb, double freqInMHz) {
+        double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(signalLevelInDb)) / 20.0;
+        return Math.pow(10.0, exp);
+    }
+
     private class Holder {
         TextView tvDetails;
-
     }
 }
