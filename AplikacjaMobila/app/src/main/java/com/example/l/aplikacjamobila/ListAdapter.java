@@ -1,8 +1,5 @@
 package com.example.l.aplikacjamobila;
 
-import java.util.List;
-import java.util.regex.Matcher;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.wifi.ScanResult;
@@ -11,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import java.util.List;
 
 class ListAdapter extends BaseAdapter {
 
@@ -55,7 +54,7 @@ class ListAdapter extends BaseAdapter {
         }
         holder.tvDetails.setText("SSID :: " + wifiList.get(position).SSID
                 + "\nDistance :: "
-                + calculateDistance(wifiList.get(position).level, wifiList.get(position).frequency)
+                + calculateDistance(wifiList.get(position).level, wifiList.get(position).frequency) +"m"
                 + "\nStrength :: " + wifiList.get(position).level
                 + "\nBSSID :: " + wifiList.get(position).BSSID
                 + "\nChannel :: "

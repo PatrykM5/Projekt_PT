@@ -38,7 +38,6 @@ public class MainActivity extends Activity {
         registerReceiver(receiverWifi, new IntentFilter(
                 WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         scanWifiList();
-
         lvWifiDetails.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -70,8 +69,6 @@ public class MainActivity extends Activity {
 
                     public void run() {
                         try {
-                            //your list fill hear
-                            adapter.notifyDataSetChanged();
                             scanWifiList();
                         } catch (Exception e) {
 
@@ -84,15 +81,18 @@ public class MainActivity extends Activity {
     }
 
     private void setAdapter() {
+        int index = lvWifiDetails.getFirstVisiblePosition();
+        View v = lvWifiDetails.getChildAt(0);
+        int top = (v == null) ? 0 : v.getTop();
         adapter = new ListAdapter(getApplicationContext(), wifiList);
         lvWifiDetails.setAdapter(adapter);
+        lvWifiDetails.setSelectionFromTop(index, top);
     }
 
     private void scanWifiList() {
         mainWifi.startScan();
         wifiList = mainWifi.getScanResults();
         //Toast.makeText(getApplicationContext(), "Odświeżanie: " + DateFormat.getDateTimeInstance().format(new Date()), Toast.LENGTH_SHORT).show();
-
         setAdapter();
     }
 
