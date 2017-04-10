@@ -1,6 +1,7 @@
 package com.example.l.aplikacjamobila;
 
 import java.util.List;
+import java.util.regex.Matcher;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -76,8 +77,11 @@ class ListAdapter extends BaseAdapter {
     }
 
     private double calculateDistance(double signalLevelInDb, double freqInMHz) {
-        double exp = (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(signalLevelInDb)) / 20.0;
-        return Math.pow(10.0, exp);
+        double result = Math.pow(10.0, (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(signalLevelInDb)) / 20.0);
+        result *= 100;
+        result = Math.round(result);
+        result /= 100;
+        return result;
     }
 
     private class Holder {
