@@ -103,6 +103,7 @@ public class MainActivity extends Activity {
         public void onReceive(Context c, Intent intent) {
         }
     }
+
     private boolean checkInternetConnection() {
         getBaseContext();
         ConnectivityManager connect = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
