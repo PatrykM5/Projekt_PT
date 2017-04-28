@@ -5,9 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -99,5 +102,25 @@ public class MainActivity extends Activity {
     class WifiReceiver extends BroadcastReceiver {
         public void onReceive(Context c, Intent intent) {
         }
+    }
+    private boolean checkInternetConnection() {
+        getBaseContext();
+        ConnectivityManager connect = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+
+        if (connect.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTING ||
+                connect.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTING ||
+                connect.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTED) {
+            return true;
+        } else if (
+                connect.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.DISCONNECTED ||
+                        connect.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.DISCONNECTED) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Ups... coś poszło nie tak")
+                    .setMessage("Wysyłanie danych nie powiodło się.\nSprawdź połączenie z Internetem.")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return false;
+        }
+        return false;
     }
 }
