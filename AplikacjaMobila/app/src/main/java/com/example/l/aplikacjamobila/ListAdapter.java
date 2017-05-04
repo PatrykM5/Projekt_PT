@@ -41,7 +41,6 @@ class ListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Holder holder;
-        System.out.println("viewpos" + position);
         View view = convertView;
         if (view == null) {
             view = inflater.inflate(R.layout.dataset, null);
@@ -54,7 +53,7 @@ class ListAdapter extends BaseAdapter {
         }
         holder.tvDetails.setText("SSID :: " + wifiList.get(position).SSID
                 + "\nDistance :: "
-                + calculateDistance(wifiList.get(position).level, wifiList.get(position).frequency) +"m"
+                + calculateDistance(wifiList.get(position).level, wifiList.get(position).frequency) + "m"
                 + "\nStrength :: " + wifiList.get(position).level
                 + "\nBSSID :: " + wifiList.get(position).BSSID
                 + "\nChannel :: "
@@ -75,12 +74,19 @@ class ListAdapter extends BaseAdapter {
         }
     }
 
-    private double calculateDistance(double signalLevelInDb, double freqInMHz) {
+    double calculateDistance(double signalLevelInDb, double freqInMHz) {
         double result = Math.pow(10.0, (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(signalLevelInDb)) / 20.0);
         result *= 100;
         result = Math.round(result);
         result /= 100;
         return result;
+    }
+
+    double calculateDistanceInCm(double signalLevelInDb, double freqInMHz) {
+        double result = Math.pow(10.0, (27.55 - (20 * Math.log10(freqInMHz)) + Math.abs(signalLevelInDb)) / 20.0);
+        result *= 100;
+        result = Math.round(result);
+        return (int) result;
     }
 
     private class Holder {
