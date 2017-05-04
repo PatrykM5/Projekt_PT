@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -72,14 +71,21 @@ public class MainActivity extends Activity {
 
                     public void run() {
                         try {
+      /*                      Socket socket = new Socket(AppConfig.SERVER_IP, AppConfig.SERVER_PORT);
+                            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());*/
+
                             scanWifiList();
+                            String POST = wifiList.get(0).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(0).level, wifiList.get(0).frequency) + " "
+                                    + wifiList.get(1).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(1).level, wifiList.get(1).frequency) + " "
+                                    + wifiList.get(2).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(2).level, wifiList.get(2).frequency);
+                            Log.d("POST: ", POST);
+
                         } catch (Exception e) {
 
                         }
                     }
                 });
             }
-
         }).start();
     }
 
