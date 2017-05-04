@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.DataOutputStream;
 import java.net.Socket;
@@ -30,6 +31,7 @@ public class MainActivity extends Activity {
     ListAdapter adapter;
     ListView lvWifiDetails;
     List<ScanResult> wifiList;
+    Socket socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,17 +67,15 @@ public class MainActivity extends Activity {
 
             public void run() {
                 try {
-
+                    socket = new Socket(AppConfig.SERVER_IP, AppConfig.SERVER_PORT);
                 } catch (Exception e) {
-
+                    Toast.makeText(getApplicationContext(), "Brak połączenia z serwerem.", Toast.LENGTH_SHORT).show();
                 }
                 runOnUiThread(new Runnable() {
-
                     public void run() {
                         try {
-                            Socket socket = new Socket(AppConfig.SERVER_IP, AppConfig.SERVER_PORT);
-                            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
+                            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                             scanWifiList();
                             String POST = wifiList.get(0).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(0).level, wifiList.get(0).frequency) + " "
                                     + wifiList.get(1).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(1).level, wifiList.get(1).frequency) + " "
