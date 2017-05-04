@@ -1,41 +1,70 @@
-import socket 
-from threading import Thread 
-from SocketServer import ThreadingMixIn 
+from turtle import *
+import socket
 
-class ClientThread(Thread): 
- 
-    def __init__(self,ip,port): 
-        Thread.__init__(self) 
-        self.ip = ip 
-        self.port = port 
-       
- 
-    def run(self): 
-        while True : 
-            data = conn.recv(2048) 
-            print "Otrzymano nowe dane od uzytkownika...", data
-            #MESSAGE = raw_input()
-            if MESSAGE == 'exit':
-                break
-            conn.send(MESSAGE)  # echo 
- 
 
-TCP_IP = '0.0.0.0' 
-TCP_PORT = 1024 
-BUFFER_SIZE = 20  
- 
-tcpServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-tcpServer.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) 
-tcpServer.bind((TCP_IP, TCP_PORT)) 
-threads = [] 
- 
-while True: 
-    tcpServer.listen(4) 
-    print "Oczekiwanie na klientów..." 
-    (conn, (ip,port)) = tcpServer.accept() 
-    newthread = ClientThread(ip,port) 
-    newthread.start() 
-    threads.append(newthread) 
- 
-for t in threads: 
-    t.join() 
+gniazdko = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+gniazdko.bind(("192.168.43.110",1024))
+
+dlugosc = raw_input("Dlugosc pomieszczenia: ")
+szerokosc = raw_input("Szerokosc pomieszczenia: ")
+
+print "Nasluchiwanie klientow..."
+gniazdko.listen(1)
+conn, addr = gniazdko.accept()
+print "Klient podlaczony!"
+raw_input("Narysowac graw?")
+
+promien_zasiegu = conn.recv(1024)
+print promien_zasiegu 
+
+dlugosc = -200+int(dlugosc)*10
+szerokosc = -200+int(szerokosc)*10
+
+color('red','yellow')
+begin_fill()
+
+
+while True:
+	penup()
+        setpos(-200, -200)
+	pendown()
+	setpos(dlugosc,-200)
+	pos_a = pos()	
+
+	setpos(dlugosc,szerokosc)
+	pos_b = pos()
+
+	setpos(-200, szerokosc)
+	pos_c = pos()
+
+	setpos(-200,-200)
+  	pos_d = pos()
+      
+        break
+
+while True:
+	penup()
+	setpos(dlugosc,szerokosc-int(promien_zasiegu))
+	write("AP_1")
+	pendown()
+	circle(int(promien_zasiegu))
+	break
+
+while True:
+	penup()
+        setpos(-200, szerokosc-int(promien_zasiegu))
+	write("AP_2")
+	pendown()
+        circle(int(promien_zasiegu))
+        break
+
+while True:
+	penup()
+        setpos(dlugosc,-200-int(promien_zasiegu))
+	write("AP_3")
+	pendown()
+        circle(int(promien_zasiegu))
+        break
+
+done()
+                
