@@ -77,13 +77,16 @@ public class MainActivity extends Activity {
 
                             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                             scanWifiList();
-                            String POST = wifiList.get(0).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(0).level, wifiList.get(0).frequency) + " "
-                                    + wifiList.get(1).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(1).level, wifiList.get(1).frequency) + " "
+                            String POST = ":" + wifiList.get(0).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(0).level, wifiList.get(0).frequency) + ":"
+                                    + wifiList.get(1).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(1).level, wifiList.get(1).frequency) + ":"
                                     + wifiList.get(2).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(2).level, wifiList.get(2).frequency);
                             Log.d("POST: ", POST);
 
                             dataOutputStream.writeByte(1);
                             dataOutputStream.writeUTF(POST);
+                            dataOutputStream.flush();
+                            dataOutputStream.close();
+                            socket.close();
 
                         } catch (Exception e) {
 
