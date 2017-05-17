@@ -1,81 +1,86 @@
-
-                
 from turtle import *
 import socket
-
-gniazdko = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-gniazdko.bind(("127.0.0.1",1024))
-print "Nasluchiwanie klientow..."
-gniazdko.listen(5)
-conn, addr = gniazdko.accept()
-print "Klient podlaczony!"
-dane = conn.recv(1024)
-gniazdko.close()
-dane = dane.split(':')
-ap_1 = dane[1]
-ap_2 = dane[2]
-ap_3 = dane[3]
-ap1_nazwa = ap_1.split(" ")[0]  
-promien_zasiegu1 = ap_1.split(" ")[1]
-ap2_nazwa = ap_2.split(" ")[0] 
-promien_zasiegu2 = ap_2.split(" ")[1] 
-ap3_nazwa = ap_3.split(" ")[0]
-promien_zasiegu3 = ap_3.split(" ")[1]
-
-
+import threading
 
 dlugosc = raw_input("Dlugosc pomieszczenia: ")
 szerokosc = raw_input("Szerokosc pomieszczenia: ")
+dlugosc = int(dlugosc)*10
+szerokosc = int(szerokosc)*10
 
- 
+gniazdko = 0;
+tab_ap = []
+tab_promieni = []
+screen = ""
+i=0
+xclick = 0
+yclick = 0
+pos = []
 
-dlugosc = -200+int(dlugosc)*10
-szerokosc = -200+int(szerokosc)*10
-
-color('red','yellow')
-begin_fill()
+def getcoordinates():
+    	onscreenclick(modifyglobalvariables) 
 
 
-while True:
+def modifyglobalvariables(rawx,rawy):
+	global xclick
+    	global yclick
+	global pos
+	global i
+    	xclick = int(rawx//1)
+   	yclick = int(rawy//1)
 	penup()
-        setpos(-200, -200)
-	pendown()
-	setpos(dlugosc,-200)
-	pos_a = pos()	
+	setpos(xclick,yclick)
+	pos.append(setpos)
+        write("AP_"+str(tab_ap[i]))
+	i = i + 1
 
-	setpos(dlugosc,szerokosc)
-	pos_b = pos()
-
-	setpos(-200, szerokosc)
-	pos_c = pos()
-
-	setpos(-200,-200)
-  	pos_d = pos()
+def draw_ap_range():	
+	for i in range (3):
+		global pos
+        	global tab_promieni
+        	global i
+		setpos(pos[i])
+        	circle(int(tab_promieni[i]))
       
-        break
 
-while True:
-	penup()
-	setpos(dlugosc,szerokosc-int(promien_zasiegu1))
-	write(ap1_nazwa)
-	pendown()
-	circle(int(promien_zasiegu1))
-	break
+def create_screen(dlugosc, szerokosc):
+	global screen 
+	screen = Screen()
+	screen.bgpic("poziom0.gif")
+	screen.title("Welcome, Commadore.")
+	screen.setup(800,600)
+	#screen.setworldcoordinates(0,dlugosc*10,szerokosc*10,0)
 
-while True:
-	penup()
-        setpos(-200, szerokosc-int(promien_zasiegu2))
-	write(ap2_nazwa)
-	pendown()
-        circle(int(promien_zasiegu2))
-        break
+def get_data():
+	gniazdko = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+	gniazdko.bind(("127.0.0.1",1024))
+	print "Nasluchiwanie klientow..."
+	gniazdko.listen(5)
+	conn, addr = gniazdko.accept()
+	print "Klient podlaczony!"
+	dane = conn.recv(1024)
+	gniazdko.close()
+	dane = dane.split(':')
+	dane = dane[1:]
+	for dane_ap in dane:		
+		nazwa_ap = dane_ap.split(" ")[0]
+		promien_ap = dane_ap.split(" ")[1]
+		tab_ap.append(nazwa_ap)
+		tab_promieni.append(promien_ap)
 
-while True:
-	penup()
-        setpos(dlugosc,-200-int(promien_zasiegu3))
-	write(ap3_nazwa)
-	pendown()
-        circle(int(promien_zasiegu3))
-        break
+	print tab_ap
+	print tab_promieni
 
-done()
+
+def draw():
+	raw_input("Dane otrzymane. Rysowanie zasiegow")
+	color('red','yellow')      		
+	getcoordinates()
+	draw_ap_range()
+	screen.listen()
+	mainloop()	
+
+listening = threading.Thread(target=get_data)
+listening.start()
+create_screen(dlugosc, szerokosc)
+draw()
+
