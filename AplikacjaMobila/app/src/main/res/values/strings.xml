@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Wifi track</string>
+    <string name="send_data">rozpocznij przesyłanie danych</string>
 </resources>
