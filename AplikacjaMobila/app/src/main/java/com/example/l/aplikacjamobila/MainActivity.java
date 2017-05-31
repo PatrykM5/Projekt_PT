@@ -5,23 +5,24 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.io.DataOutputStream;
-import java.net.Socket;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,7 +32,7 @@ public class MainActivity extends Activity {
     ListAdapter adapter;
     ListView lvWifiDetails;
     List<ScanResult> wifiList;
-    Socket socket;
+    Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,25 +41,37 @@ public class MainActivity extends Activity {
 
         lvWifiDetails = (ListView) findViewById(R.id.lvWifiDetails);
         mainWifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
         WifiReceiver receiverWifi = new WifiReceiver();
         registerReceiver(receiverWifi, new IntentFilter(
                 WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        unregisterReceiver(receiverWifi);
         scanWifiList();
+
+        button = (Button) findViewById(R.id.button);
+
+        new SendFirstString().execute();
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Timer t = new Timer();
+                t.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        process();
+                        Log.d("Odświeżanie: ", DateFormat.getDateTimeInstance().format(new Date()));
+                    }
+                }, 0, 10000); // czas w milisekundach. 20sek = 20000
+            }
+        });
+
         lvWifiDetails.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ScanResult selectedWiFi = wifiList.get(position);
             }
         });
-
-        Timer t = new Timer();
-        t.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                process();
-                Log.d("Odświeżanie: ", DateFormat.getDateTimeInstance().format(new Date()));
-            }
-        }, 0, 10000); // czas w milisekundach. 20sek = 20000
     }
 
     private void process() {
@@ -66,32 +79,28 @@ public class MainActivity extends Activity {
         new Thread(new Runnable() {
 
             public void run() {
-                try {
-                    socket = new Socket(AppConfig.SERVER_IP, AppConfig.SERVER_PORT);
-                } catch (Exception e) {
-                    Toast.makeText(getApplicationContext(), "Brak połączenia z serwerem.", Toast.LENGTH_SHORT).show();
-                }
+
                 runOnUiThread(new Runnable() {
+                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     public void run() {
                         try {
+                            DataOutputStream dataOutputStream = new DataOutputStream(SplashScreen.socket.getOutputStream());
 
-                            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                             scanWifiList();
                             String POST = "";
 
                             for (int i = 0; i < wifiList.size(); i++) {
-                                POST = POST + ":" + wifiList.get(i).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(i).level, wifiList.get(1).frequency);
-
+                                if (Objects.equals(wifiList.get(i).SSID, "abae0a") || Objects.equals(wifiList.get(i).SSID, "Orange-6F92") || Objects.equals(wifiList.get(i).SSID, "Marcin")) {
+                                    POST = POST + ":" + adapter.calculateDistanceInCm(wifiList.get(i).level, wifiList.get(1).frequency);
+                                }
                             }
                             Log.d("POST: ", POST);
                             dataOutputStream.writeByte(1);
                             dataOutputStream.writeUTF(POST);
                             dataOutputStream.flush();
-                            dataOutputStream.close();
-                            socket.close();
 
                         } catch (Exception e) {
-
+                            Log.d("coś sie popsuło:", String.valueOf(e));
                         }
                     }
                 });
@@ -120,24 +129,31 @@ public class MainActivity extends Activity {
         }
     }
 
-    private boolean checkInternetConnection() {
-        getBaseContext();
-        ConnectivityManager connect = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+    private class SendFirstString extends AsyncTask<String, Void, String> {
 
-        if (connect.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTING ||
-                connect.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTING ||
-                connect.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.CONNECTED) {
-            return true;
-        } else if (
-                connect.getNetworkInfo(0).getState() == android.net.NetworkInfo.State.DISCONNECTED ||
-                        connect.getNetworkInfo(1).getState() == android.net.NetworkInfo.State.DISCONNECTED) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Ups... coś poszło nie tak")
-                    .setMessage("Wysyłanie danych nie powiodło się.\nSprawdź połączenie z Internetem.")
-                    .setPositiveButton("OK", null)
-                    .show();
-            return false;
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                DataOutputStream dataOutputStream = new DataOutputStream(SplashScreen.socket.getOutputStream());
+
+                scanWifiList();
+                String POST = "";
+
+                for (int i = 0; i < wifiList.size(); i++) {
+                    if (Objects.equals(wifiList.get(i).SSID, "abae0a") || Objects.equals(wifiList.get(i).SSID, "Orange-6F92") || Objects.equals(wifiList.get(i).SSID, "Marcin")) {
+                        POST = POST + ":" + wifiList.get(i).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(i).level, wifiList.get(1).frequency);
+                    }
+                }
+                Log.d("POST: ", POST);
+                dataOutputStream.writeByte(1);
+                dataOutputStream.writeUTF(POST);
+                dataOutputStream.flush();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
-        return false;
     }
 }
