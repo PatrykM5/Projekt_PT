@@ -90,7 +90,7 @@ public class MainActivity extends Activity {
                             String POST = "";
 
                             for (int i = 0; i < wifiList.size(); i++) {
-                                if (Objects.equals(wifiList.get(i).SSID, "abae0a") || Objects.equals(wifiList.get(i).SSID, "Orange-6F92") || Objects.equals(wifiList.get(i).SSID, "Marcin")) {
+                                if (Objects.equals(wifiList.get(i).SSID, "ap1") || Objects.equals(wifiList.get(i).SSID, "ap2") || Objects.equals(wifiList.get(i).SSID, "ap3")) {
                                     POST = POST + ":" + adapter.calculateDistanceInCm(wifiList.get(i).level, wifiList.get(1).frequency);
                                 }
                             }
