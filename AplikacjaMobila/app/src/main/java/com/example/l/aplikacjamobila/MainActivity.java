@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
                         process();
                         Log.d("Odświeżanie: ", DateFormat.getDateTimeInstance().format(new Date()));
                     }
-                }, 0, 10000); // czas w milisekundach. 20sek = 20000
+                }, 0, 1000); // czas w milisekundach. 20sek = 20000
             }
         });
 
@@ -95,9 +95,11 @@ public class MainActivity extends Activity {
                                 }
                             }
                             Log.d("POST: ", POST);
-                            dataOutputStream.writeByte(1);
+                            //dataOutputStream.writeByte(1);
                             dataOutputStream.writeUTF(POST);
                             dataOutputStream.flush();
+                            //dataOutputStream.close();
+                            //SplashScreen.socket.close();
 
                         } catch (Exception e) {
                             Log.d("coś sie popsuło:", String.valueOf(e));
@@ -135,21 +137,24 @@ public class MainActivity extends Activity {
         @Override
         protected String doInBackground(String... params) {
             try {
+
+                //SplashScreen.socket.connect("192.168.2.9:1024");
                 DataOutputStream dataOutputStream = new DataOutputStream(SplashScreen.socket.getOutputStream());
 
                 scanWifiList();
                 String POST = "";
 
                 for (int i = 0; i < wifiList.size(); i++) {
-                    if (Objects.equals(wifiList.get(i).SSID, "abae0a") || Objects.equals(wifiList.get(i).SSID, "Orange-6F92") || Objects.equals(wifiList.get(i).SSID, "Marcin")) {
-                        POST = POST + ":" + wifiList.get(i).SSID + " " + adapter.calculateDistanceInCm(wifiList.get(i).level, wifiList.get(1).frequency);
+                    if (Objects.equals(wifiList.get(i).SSID, "ap1") || Objects.equals(wifiList.get(i).SSID, "ap2") || Objects.equals(wifiList.get(i).SSID, "ap3")) {
+                        POST = POST + ":" + wifiList.get(i).SSID + "," + adapter.calculateDistanceInCm(wifiList.get(i).level, wifiList.get(1).frequency);
                     }
                 }
                 Log.d("POST: ", POST);
-                dataOutputStream.writeByte(1);
+                //dataOutputStream.writeByte(1);
                 dataOutputStream.writeUTF(POST);
                 dataOutputStream.flush();
-
+                //dataOutputStream.close();
+                //SplashScreen.socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

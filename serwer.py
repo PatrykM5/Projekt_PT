@@ -4,7 +4,7 @@ import threading
 import wx
 
 
-gniazdko = 0;
+gniazdko = 0
 tab_ap = []
 tab_promieni = []
 screen = ""
@@ -13,12 +13,21 @@ xclick = 0
 yclick = 0
 pos = []
 constant_pos = []
+disp_ratio=0
+disp_x=800
+disp_y=800
 
 class MyFrame(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, wx.ID_ANY, 'WiFiLocator',pos=(300, 150), size=(500, 300))
         self.panel1 = wx.Panel(self, -1)
         self.button1 = wx.Button(self.panel1,label="Choose image", id=-1,pos=(10, 20), size = (100,25))
+        self.basicLabel1 = wx.StaticText(self.panel1, -1, "Wymiar x(m):",pos=(10,55))
+        self.basicText1 = wx.TextCtrl(self.panel1, -1, "10", size=(60, -1),pos=(100,50))
+        self.basicText1.SetInsertionPoint(0)
+        self.basicLabel2 = wx.StaticText(self.panel1, -1, "Wymiar y(m):", pos=(10, 95))
+        self.basicText2 = wx.TextCtrl(self.panel1, -1, "10", size=(60, -1), pos=(100, 90))
+        self.basicText2.SetInsertionPoint(0)
         self.button1.Bind(wx.EVT_BUTTON, self.loadFile)
         self.Show(True)
 
@@ -32,7 +41,14 @@ class MyFrame(wx.Frame):
         screen = Screen()
         screen.bgpic(path)
         screen.title("WiFiLocator")
-        screen.setup(800, 600)
+        x1=self.basicText1.GetValue()
+        y1=self.basicText2.GetValue()
+        #a = x1'\u221220'
+        #float(a)
+        #disp_ratio=disp_x/x1
+        #print ("disp_ratio: "+disp_ratio)
+        #disp_y=disp_x*float(y1/x1);
+        screen.setup(disp_x, disp_y)
         draw()
 
 
@@ -84,12 +100,11 @@ def get_data():
     global i
 
     gniazdko = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    gniazdko.bind(("192.168.43.110",1024))
+    gniazdko.bind(("192.168.43.74",1025))
     print "Nasluchiwanie klientow..."
-    gniazdko.listen(5)
+    gniazdko.listen(1)
     conn, addr = gniazdko.accept()
     print "Klient podlaczony!"
-
     dane = conn.recv(1024)
     dane = dane.split(':')
     dane = dane[1:]
@@ -99,6 +114,7 @@ def get_data():
         promien_ap = dane_ap.split(",")[1]
         tab_ap.append(nazwa_ap)
         tab_promieni.append(promien_ap)
+        #print(dane_ap)
 
     print tab_ap
     print tab_promieni
@@ -118,7 +134,7 @@ def get_data():
 
 
 def draw():
-    raw_input("Dane otrzymane. Rysowanie zasiegow")
+    #raw_input("Dane otrzymane. Rysowanie zasiegow")
     color('red','yellow')
     getcoordinates()
     speed(0)
