@@ -16,4 +16,17 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="189dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="108dp"
+        android:text="Aplikacja serwerowa obecnie jest nie dostępna.\nProszę czekać."
+        android:textSize="18sp"
+        android:textStyle="bold" />
 </RelativeLayout>
